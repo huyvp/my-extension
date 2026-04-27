@@ -37,7 +37,8 @@ const translations = {
     issuer_ph: 'Issuer (e.g. Google)',
     name_ph: 'Account Name',
     secret_ph: 'Secret Key (Base32)',
-    reveal: 'Reveal'
+    reveal: 'Reveal',
+    edit_account: 'Edit Account'
   },
   vi: {
     title: 'Xác thực',
@@ -77,7 +78,8 @@ const translations = {
     issuer_ph: 'Nhà cung cấp (VD: Google)',
     name_ph: 'Tên tài khoản',
     secret_ph: 'Secret Key (Base32)',
-    reveal: 'Hiện mã'
+    reveal: 'Hiện mã',
+    edit_account: 'Sửa Tài Khoản'
   }
 };
 

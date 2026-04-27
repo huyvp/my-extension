@@ -1,6 +1,6 @@
 import { i18n } from './i18n/i18n.js';
 import { storage } from './storage/storage.js';
-import { accountUtils } from './accounts/logic.js';
+import { accountUtils, LOGO_MAP } from './accounts/logic.js';
 
 const state = {
   accounts: [],
@@ -10,6 +10,7 @@ const state = {
   revealedCodes: new Set(),
   searchQuery: '',
   accountToDelete: null,
+  editingAccountId: null,
   addMode: 'manual'
 };
 
@@ -40,6 +41,26 @@ async function bootstrap() {
     state.isLocked = false;
     showUnlockModal(true);
   }
+
+  const emojiMap = {
+    github: '🐙', google: '🔍', gitlab: '🦊', aws: '☁️', amazon: '📦', 
+    outlook: '📧', microsoft: '🪟', facebook: '👥', digitalocean: '💧', 
+    heroku: '🟣', azure: '☁️', vingroup: '🏢', vinfast: '🚗', binance: '💰', 
+    discord: '💬', steam: '🎮', epicgames: '🕹️', fortinet: '🛡️', 
+    cisco: '🌐', openvpn: '🔑', vpn: '🛡️', twitter: '🐦', x: '✖️', 
+    apple: '🍎', dropbox: '📦', slack: '💬', trello: '📋'
+  };
+
+  let avatarOptions = '';
+  Object.keys(LOGO_MAP).sort().forEach(key => {
+    const formatted = key.charAt(0).toUpperCase() + key.slice(1);
+    const emoji = emojiMap[key] || '🔹';
+    avatarOptions += `<option value="${key}">${emoji} ${formatted}</option>`;
+  });
+  const inAvatar = document.getElementById('in-avatar');
+  const editAvatar = document.getElementById('edit-avatar');
+  if (inAvatar) inAvatar.innerHTML += avatarOptions;
+  if (editAvatar) editAvatar.innerHTML += avatarOptions;
 
   bindEvents();
 }
@@ -137,7 +158,7 @@ function render() {
 
     return `
       <div class="card" data-id="${acc.id}" style="--acc-color: ${acc.color || '#3b82f6'}">
-        <img class="avatar" src="${accountUtils.getLogo(acc.issuer)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(acc.issuer || '?')}'">
+        <img class="avatar" src="${accountUtils.getLogo(acc.issuer, acc.avatar)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(acc.issuer || '?')}'">
         <div class="content">
           <div class="card-header-line">
             <span class="issuer">${acc.issuer || 'Authenticator'}</span>
@@ -157,6 +178,7 @@ function render() {
                <span class="timer-text" style="font-size:10px; font-weight:700; color:var(--ms-blue); z-index: 1;">${remaining}</span>
              </div>
              <div class="card-actions" style="margin-top:4px;">
+               <button class="mini-btn" data-action="edit" data-id="${acc.id}" title="Edit"><span class="material-symbols-outlined">edit</span></button>
                <button class="mini-btn" data-action="delete" data-id="${acc.id}" title="Delete"><span class="material-symbols-outlined">delete</span></button>
              </div>
           </div>
@@ -342,6 +364,21 @@ function bindEvents() {
       promptDelete(delBtn.dataset.id);
       return;
     }
+    
+    const editBtn = e.target.closest('[data-action="edit"]');
+    if (editBtn) {
+      const acc = state.accounts.find(a => a.id === editBtn.dataset.id);
+      if (acc) {
+        state.editingAccountId = acc.id;
+        document.getElementById('edit-issuer').value = acc.issuer || '';
+        document.getElementById('edit-name').value = acc.name || '';
+        document.getElementById('edit-category').value = acc.category || 'Personal';
+        document.getElementById('edit-color').value = acc.color || '#0078d4';
+        document.getElementById('edit-avatar').value = acc.avatar || 'auto';
+        document.getElementById('edit-modal').classList.add('active');
+      }
+      return;
+    }
 
     const revealBtn = e.target.closest('[data-action="reveal"]');
     if (revealBtn) {
@@ -390,6 +427,7 @@ function bindEvents() {
   $('add-fab').onclick = () => {
     $('add-modal').classList.add('active');
     $('in-secret').value = ''; $('in-name').value = ''; $('in-issuer').value = ''; $('in-uri').value = '';
+    $('in-avatar').value = 'auto';
     $('secret-error').classList.add('hidden');
     $('add-save').disabled = false;
   };
@@ -441,6 +479,7 @@ function bindEvents() {
   $('add-save').onclick = async () => {
     const category = $('in-category').value;
     const color = $('in-color').value;
+    const avatar = $('in-avatar').value;
     let newAccounts = [];
 
     if (state.addMode === 'manual') {
@@ -483,13 +522,37 @@ function bindEvents() {
           name: acc.name,
           issuer: acc.issuer,
           category,
-          color
+          color,
+          avatar
         });
       });
       await storage.saveSecure(state.accounts, state.masterPassword, state.settings.storageType);
       $('add-modal').classList.remove('active');
       toast(`Added ${newAccounts.length} account(s)`);
       render();
+    }
+  };
+  
+  // Edit Account modal
+  $('edit-cancel').onclick = () => {
+    state.editingAccountId = null;
+    $('edit-modal').classList.remove('active');
+  };
+  $('edit-save').onclick = async () => {
+    if (state.editingAccountId) {
+      const acc = state.accounts.find(a => a.id === state.editingAccountId);
+      if (acc) {
+        acc.issuer = $('edit-issuer').value.trim();
+        acc.name = $('edit-name').value.trim() || 'Account';
+        acc.category = $('edit-category').value;
+        acc.color = $('edit-color').value;
+        acc.avatar = $('edit-avatar').value;
+        await storage.saveSecure(state.accounts, state.masterPassword, state.settings.storageType);
+        $('edit-modal').classList.remove('active');
+        state.editingAccountId = null;
+        render();
+        toast('Account updated');
+      }
     }
   };
 

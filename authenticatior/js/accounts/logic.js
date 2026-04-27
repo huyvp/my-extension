@@ -1,17 +1,17 @@
-const LOGO_MAP = {
+export const LOGO_MAP = {
   github: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
   google: 'https://www.google.com/favicon.ico',
   gitlab: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg',
   aws: 'https://a0.awsstatic.com/main/images/logos/aws-logo-care-h60.png',
   amazon: 'https://www.amazon.com/favicon.ico',
-  outlook: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg',
+  outlook: 'https://api.iconify.design/logos:microsoft-outlook.svg',
   microsoft: 'https://www.microsoft.com/favicon.ico',
   facebook: 'https://www.facebook.com/favicon.ico',
   digitalocean: 'https://www.digitalocean.com/favicon.ico',
   heroku: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/heroku/heroku-original.svg',
   azure: 'https://azure.microsoft.com/favicon.ico',
-  vingroup: 'https://www.vingroup.net/favicon.ico',
-  vinfast: 'https://vinfastauto.com/favicon.ico',
+  vingroup: 'https://www.google.com/s2/favicons?domain=vingroup.net&sz=128',
+  vinfast: 'https://www.google.com/s2/favicons?domain=vinfastauto.com&sz=128',
   binance: 'https://binance.com/favicon.ico',
   discord: 'https://discord.com/favicon.ico',
   steam: 'https://store.steampowered.com/favicon.ico',
@@ -29,7 +29,10 @@ const LOGO_MAP = {
 };
 
 export const accountUtils = {
-  getLogo(issuer = '') {
+  getLogo(issuer = '', explicitAvatar = 'auto') {
+    if (explicitAvatar && explicitAvatar !== 'auto' && LOGO_MAP[explicitAvatar]) {
+      return LOGO_MAP[explicitAvatar];
+    }
     const key = issuer.toLowerCase().replace(/\s/g, '');
     for (const [name, url] of Object.entries(LOGO_MAP)) {
       if (key.includes(name)) return url;

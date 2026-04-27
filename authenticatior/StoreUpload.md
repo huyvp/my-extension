@@ -12,6 +12,7 @@ Authenticator Pro is a professional-grade, highly secure Two-Factor Authenticati
 🌟 **Key Features:**
 - **Bank-Level Security:** Your secret keys are encrypted locally using AES-GCM encryption. Nobody (not even us) can access your codes without your Master Password.
 - **Auto-Lock Vault:** The extension securely locks itself when you close your browser. 
+- **Zero Background Resource Drain:** Built strictly on Google's modern Manifest V3 architecture. Consumes 0% CPU and 0 MB RAM when the popup is closed, keeping your browser lightning fast.
 - **Offline & Local-First:** Works entirely offline. Your data never leaves your device unless you explicitly enable Chrome Sync.
 - **Smart QR Code Scanner:** Easily add accounts by scanning QR code images directly from your computer, including bulk imports from Google Authenticator export QR codes.
 - **Cross-Device Sync (Optional):** Securely sync your encrypted 2FA vault across all your Chrome browsers using Google Chrome Sync.

@@ -153,6 +153,11 @@
         <p id="secret-error" class="error-text hidden" style="text-align:left; margin-top:-6px;">Invalid Base32
           character found.</p>
 
+        <select id="in-avatar" style="margin-bottom: 8px;">
+          <option value="auto">Auto-detect from Issuer</option>
+          <!-- populated dynamically -->
+        </select>
+
         <div class="form-row" style="display:flex; gap:8px;">
           <select id="in-category" style="flex:1;">
             <option value="Personal">Personal</option>
@@ -187,7 +192,35 @@
       </div>
     </div>
   </div>
-
+  <!-- Edit Account Modal -->
+  <div id="edit-modal" class="modal-overlay">
+    <div class="modal" style="width: 340px;">
+      <div class="modal-header" data-i18n="edit_account">Edit Account</div>
+      <div class="modal-body">
+        <input type="text" id="edit-issuer" placeholder="Issuer (e.g. Google)" data-i18n-ph="issuer_ph">
+        <input type="text" id="edit-name" placeholder="Account Name" data-i18n-ph="name_ph">
+        <select id="edit-avatar" style="margin-bottom: 8px;">
+          <option value="auto">Auto-detect from Issuer</option>
+          <!-- populated dynamically -->
+        </select>
+        <div class="form-row" style="display:flex; gap:8px;">
+          <select id="edit-category" style="flex:1;">
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Social">Social</option>
+            <option value="Finance">Finance / Crypto</option>
+            <option value="Gaming">Gaming</option>
+            <option value="VPN">VPN / Network</option>
+          </select>
+          <input type="color" id="edit-color" value="#0078d4" style="width:50px; padding:0; border:none; border-radius:4px; height:38px; cursor:pointer;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="edit-cancel" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" id="edit-save" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
   <div id="delete-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">Delete Account</div>
