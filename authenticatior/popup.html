@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authenticator Pro</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="header-section">
+    <header class="app-header">
+      <div class="logo-group">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" fill="#3b82f6" />
+          <circle cx="12" cy="12" r="4" fill="white" />
+          <path d="M12 12V16" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <h1 class="app-title">Authenticator Pro</h1>
+      </div>
+
+      <div class="header-actions">
+        <button id="theme-btn" class="icon-btn" title="Toggle Theme">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+        <!-- Nút Language giờ sẽ gọi Modal -->
+        <button id="lang-btn" class="icon-btn" title="Language">
+          <span class="material-symbols-outlined">language</span>
+        </button>
+        <button id="settings-btn" class="icon-btn" title="Settings">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="search-container">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search accounts..." autocomplete="off">
+    </div>
+  </div>
+
+  <main id="account-list" class="account-list">
+    <div class="empty-state">
+      <p data-i18n="empty">Loading...</p>
+    </div>
+  </main>
+
+  <!-- Nút Plus cũ -->
+  <button id="add-fab" class="fab" title="Add Account">+</button>
+
+  <!-- Unlock Modal -->
+  <div id="unlock-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header" id="unlock-title">Unlock Vault</div>
+      <div class="modal-body">
+        <input type="password" id="master-password" placeholder="Enter Master Password">
+        <p id="unlock-error" class="error-text hidden">Incorrect password</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="unlock-btn">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header" data-i18n="settings">Settings</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label data-i18n="visibility">OTP Visibility</label>
+          <select id="st-visibility">
+            <option value="show" data-i18n="always_show">Always show codes</option>
+            <option value="click" data-i18n="click_to_reveal">Click to reveal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="storage_area">Storage Area</label>
+          <select id="st-storage-type">
+            <option value="local" data-i18n="local_only">Local Only (This Device)</option>
+            <option value="sync" data-i18n="chrome_sync">Chrome Sync (Across Devices)</option>
+          </select>
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label data-i18n="security">Security</label>
+          <button class="btn btn-ghost" id="change-pwd-btn" style="text-align:center;" data-i18n="change_pwd">Change Master Password</button>
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label data-i18n="data_mgmt">Data Management</label>
+          <div class="action-buttons-row">
+            <button class="btn btn-ghost" id="export-btn">
+              <span class="material-symbols-outlined" style="font-size:18px;">file_download</span> <span data-i18n="export">Export</span>
+            </button>
+            <label class="btn btn-ghost"
+              style="margin:0; text-align:center; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <span class="material-symbols-outlined" style="font-size:18px;">file_upload</span> <span data-i18n="import">Import</span>
+              <input type="file" id="import-input" accept=".json" style="display:none;">
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="st-close" data-i18n="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language Modal -->
+  <div id="lang-modal" class="modal-overlay">
+    <div class="modal" style="width: 260px;">
+      <div class="modal-header">Select Language</div>
+      <div class="modal-body">
+        <select id="lang-select">
+          <option value="en">🇺🇸 English</option>
+          <option value="vi">🇻🇳 Tiếng Việt</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="lang-cancel">Cancel</button>
+        <button class="btn btn-primary" id="lang-save">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Account Modal -->
+  <div id="add-modal" class="modal-overlay">
+    <div class="modal" style="width: 340px;">
+      <div class="modal-header" data-i18n="add_account">Add Account</div>
+
+      <!-- Chế độ Add -->
+      <div class="tab-header">
+        <div class="tab active" data-tab="manual" data-i18n="manual_add">Manual</div>
+        <div class="tab" data-tab="uri" data-i18n="uri_add">OTPAuth URI</div>
+      </div>
+
+      <div class="modal-body tab-content" id="tab-manual">
+        <p style="font-size:11px; color:var(--ms-text-secondary); margin-top:0;">Enter the details provided by your
+          service manually.</p>
+        <input type="text" id="in-issuer" placeholder="Issuer (e.g. Google)" data-i18n-ph="issuer_ph">
+        <input type="text" id="in-name" placeholder="Account Name" data-i18n-ph="name_ph">
+        <input type="text" id="in-secret" placeholder="Secret Key (Base32)" data-i18n-ph="secret_ph">
+        <p id="secret-error" class="error-text hidden" style="text-align:left; margin-top:-6px;">Invalid Base32
+          character found.</p>
+
+        <div class="form-row" style="display:flex; gap:8px;">
+          <select id="in-category" style="flex:1;">
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Social">Social</option>
+            <option value="Finance">Finance / Crypto</option>
+            <option value="Gaming">Gaming</option>
+            <option value="VPN">VPN / Network</option>
+          </select>
+          <input type="color" id="in-color" value="#0078d4"
+            style="width:50px; padding:0; border:none; border-radius:4px; height:38px; cursor:pointer;">
+        </div>
+      </div>
+
+      <div class="modal-body tab-content hidden" id="tab-uri">
+        <p style="font-size:11px; color:var(--ms-text-secondary); margin-top:0;">Paste the otpauth:// URL or upload a QR image.</p>
+        <textarea id="in-uri"
+          placeholder="otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example" rows="4"
+          style="width:100%; box-sizing:border-box; padding:10px; border-radius:4px; border:1px solid var(--ms-border); resize:none; font-size:12px; font-family:monospace;"></textarea>
+        
+        <div style="margin-top: 8px; text-align: center;">
+          <label class="btn btn-ghost" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; padding:6px 10px; font-size:13px;">
+            <span class="material-symbols-outlined" style="font-size:16px;">qr_code_scanner</span> Scan QR Image
+            <input type="file" id="qr-input" accept="image/*" style="display:none;">
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="add-cancel" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" id="add-save" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">Delete Account</div>
+      <div class="modal-body">
+        <p style="text-align:center; font-size:14px; margin:0;">Are you sure you want to remove this account?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="delete-cancel">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="change-pwd-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">Change Master Password</div>
+      <div class="modal-body">
+        <input type="password" id="cp-old" placeholder="Old Password">
+        <input type="password" id="cp-new" placeholder="New Password">
+        <p id="cp-error" class="error-text hidden">Error changing password.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="cp-cancel">Cancel</button>
+        <button class="btn btn-primary" id="cp-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container hidden">Copied!</div>
+
+  <script src="lib/otpauth.js"></script>
+  <script src="lib/jsqr.js"></script>
+  <script type="module" src="js/popup.js"></script>
+</body>
+
+</html>
